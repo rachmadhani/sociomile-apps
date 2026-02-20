@@ -16,8 +16,8 @@ const (
 )
 
 type Conversation struct {
-	ID                 string             `gorm:"primaryKey;type:varchar(36)"`
-	TenantID           string             `gorm:"type:varchar(36);index;not null"`
+	ID                 uuid.UUID          `gorm:"type:uuid;primary_key;default:gen_random_uuid()"`
+	TenantID           uuid.UUID          `gorm:"type:uuid;index;not null"`
 	CustomerExternalID string             `gorm:"type:varchar(255);not null"`
 	Status             ConversationStatus `gorm:"type:varchar(255);default:'open';not null"`
 	AssignedAgentID    *string            `gorm:"type:varchar(36);index"`
@@ -33,6 +33,8 @@ type Conversation struct {
 }
 
 func (c *Conversation) BeforeCreate(tx *gorm.DB) error {
-	c.ID = uuid.NewString()
+	if c.ID == uuid.Nil {
+		c.ID = uuid.New()
+	}
 	return nil
 }

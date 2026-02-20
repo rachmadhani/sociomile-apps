@@ -15,12 +15,12 @@ const (
 )
 
 type User struct {
-	ID           string   `gorm:"primaryKey;type:varchar(36)"`
-	TenantID     string   `gorm:"type:varchar(36);index;not null"`
-	Name         string   `gorm:"type:varchar(255);not null"`
-	Email        string   `gorm:"size:150;uniqueIndex;not null"`
-	PasswordHash string   `gorm:"size:255;not null"`
-	Role         UserRole `gorm:"type:varchar(50);default:'agent'" json:"role"`
+	ID           uuid.UUID `gorm:"type:uuid;primary_key;default:gen_random_uuid()"`
+	TenantID     uuid.UUID `gorm:"type:uuid;index;not null"`
+	Name         string    `gorm:"type:varchar(255);not null"`
+	Email        string    `gorm:"size:150;uniqueIndex;not null"`
+	PasswordHash string    `gorm:"size:255;not null"`
+	Role         UserRole  `gorm:"type:varchar(50);default:'agent'" json:"role"`
 
 	CreatedAt time.Time      `json:"created_at"`
 	UpdatedAt time.Time      `json:"updated_at"`
@@ -30,6 +30,8 @@ type User struct {
 }
 
 func (u *User) BeforeCreate(tx *gorm.DB) error {
-	u.ID = uuid.New().String()
+	if u.ID == uuid.Nil {
+		u.ID = uuid.New()
+	}
 	return nil
 }

@@ -15,8 +15,8 @@ const (
 )
 
 type Message struct {
-	ID             string         `gorm:"primaryKey;type:varchar(36)"`
-	ConversationID string         `gorm:"type:varchar(36);index;not null"`
+	ID             uuid.UUID      `gorm:"type:uuid;primary_key;default:gen_random_uuid()"`
+	ConversationID uuid.UUID      `gorm:"type:uuid;index;not null"`
 	SenderType     SenderType     `gorm:"type:varchar(50);default:'agent';not null"`
 	Message        string         `gorm:"type:text;not null"`
 	CreatedAt      time.Time      `json:"created_at"`
@@ -27,6 +27,8 @@ type Message struct {
 }
 
 func (m *Message) BeforeCreate(tx *gorm.DB) error {
-	m.ID = uuid.New().String()
+	if m.ID == uuid.Nil {
+		m.ID = uuid.New()
+	}
 	return nil
 }

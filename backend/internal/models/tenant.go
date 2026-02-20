@@ -8,13 +8,15 @@ import (
 )
 
 type Tenant struct {
-	ID        string    `gorm:"primaryKey;type:varchar(36)"`
+	ID        uuid.UUID `gorm:"type:uuid;primary_key;default:gen_random_uuid()"`
 	Name      string    `gorm:"type:varchar(255)";not null`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
 func (t *Tenant) BeforeCreate(tx *gorm.DB) error {
-	t.ID = uuid.New().String()
+	if t.ID == uuid.Nil {
+		t.ID = uuid.New()
+	}
 	return nil
 }

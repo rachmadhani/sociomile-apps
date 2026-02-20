@@ -39,6 +39,7 @@ func AutoMigrate() error {
 		&model.Conversation{},
 		&model.Message{},
 		&model.Ticket{},
+		&model.Session{},
 	)
 	if err != nil {
 		return err

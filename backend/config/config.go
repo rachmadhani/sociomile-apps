@@ -8,14 +8,15 @@ import (
 )
 
 type Config struct {
-	DBHost     string
-	Env        string
-	Port       string
-	DBPort     string
-	DBName     string
-	DBUser     string
-	DBPassword string
-	JWTSecret  string
+	DBHost             string
+	Env                string
+	Port               string
+	DBPort             string
+	DBName             string
+	DBUser             string
+	DBPassword         string
+	JWTSecret          string
+	JWTExpirationHours int
 }
 
 var AppConfig *Config
@@ -26,14 +27,15 @@ func LoadConfig() *Config {
 	}
 
 	AppConfig = &Config{
-		DBHost:     getEnv("DB_HOST", "localhost"),
-		Port:       getEnv("PORT", "8080"),
-		Env:        getEnv("APP_ENV", "development"),
-		DBPort:     getEnv("DB_PORT", "3306"),
-		DBName:     getEnv("DB_NAME", "sociomile"),
-		DBUser:     getEnv("DB_USER", "root"),
-		DBPassword: getEnv("DB_PASSWORD", ""),
-		JWTSecret:  getEnv("JWT_SECRET", "secret"),
+		DBHost:             getEnv("DB_HOST", "localhost"),
+		Port:               getEnv("PORT", "8080"),
+		Env:                getEnv("APP_ENV", "development"),
+		DBPort:             getEnv("DB_PORT", "3306"),
+		DBName:             getEnv("DB_NAME", "sociomile"),
+		DBUser:             getEnv("DB_USER", "root"),
+		DBPassword:         getEnv("DB_PASSWORD", ""),
+		JWTSecret:          getEnv("JWT_SECRET", "secret"),
+		JWTExpirationHours: 24,
 	}
 
 	return AppConfig
