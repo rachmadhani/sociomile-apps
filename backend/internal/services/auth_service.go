@@ -30,11 +30,20 @@ func (s *AuthService) Register(input authDTO.RegisterRequest) (*authDTO.AuthResp
 		return nil, errors.New("failed to hash password")
 	}
 
+	tenant := model.Tenant{
+		Name: input.TenantName,
+	}
+
+	if err := s.db.Create(&tenant).Error; err != nil {
+		return nil, errors.New("failed to create tenant")
+	}
+
 	user := model.User{
+		TenantID:     tenant.ID,
 		Name:         input.Name,
 		Email:        input.Email,
 		PasswordHash: string(hashedPassword),
-		Role:         model.RoleAgent,
+		Role:         model.RoleAdmin,
 	}
 
 	if err := s.db.Create(&user).Error; err != nil {

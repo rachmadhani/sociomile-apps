@@ -24,9 +24,9 @@ const (
 )
 
 type Ticket struct {
-	ID              uuid.UUID      `gorm:"type:uuid;primary_key;default:gen_random_uuid()"`
-	TenantID        uuid.UUID      `gorm:"type:uuid;index;not null"`
-	ConversationID  uuid.UUID      `gorm:"type:uuid;index;not null"`
+	ID              uuid.UUID      `gorm:"type:char(36);primary_key"`
+	TenantID        uuid.UUID      `gorm:"type:char(36);index;not null"`
+	ConversationID  uuid.UUID      `gorm:"type:char(36);index;not null"`
 	Title           string         `gorm:"type:varchar(255);not null"`
 	Description     string         `gorm:"type:text;not null"`
 	Status          TicketStatus   `gorm:"type:varchar(50);default:'open';not null"`

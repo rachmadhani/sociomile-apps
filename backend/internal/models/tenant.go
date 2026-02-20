@@ -8,8 +8,8 @@ import (
 )
 
 type Tenant struct {
-	ID        uuid.UUID `gorm:"type:uuid;primary_key;default:gen_random_uuid()"`
-	Name      string    `gorm:"type:varchar(255)";not null`
+	ID        uuid.UUID `gorm:"type:char(36);primary_key" json:"id"`
+	Name      string    `gorm:"type:varchar(255);not null"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }

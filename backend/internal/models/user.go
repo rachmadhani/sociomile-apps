@@ -15,8 +15,8 @@ const (
 )
 
 type User struct {
-	ID           uuid.UUID `gorm:"type:uuid;primary_key;default:gen_random_uuid()"`
-	TenantID     uuid.UUID `gorm:"type:uuid;index;not null"`
+	ID           uuid.UUID `gorm:"type:char(36);primary_key" json:"id"`
+	TenantID     uuid.UUID `gorm:"type:char(36);index;not null"`
 	Name         string    `gorm:"type:varchar(255);not null"`
 	Email        string    `gorm:"size:150;uniqueIndex;not null"`
 	PasswordHash string    `gorm:"size:255;not null"`
