@@ -23,10 +23,18 @@ func (h *ConversationQueryHandler) List(c *gin.Context) {
 
 	tenantID := c.GetString("tenant_id")
 
+	var assignedAgentID uuid.UUID
+	if req.AssignedAgent != "" {
+		parsed, err := uuid.Parse(req.AssignedAgent)
+		if err == nil {
+			assignedAgentID = parsed
+		}
+	}
+
 	convs, total, err := h.service.List(
 		uuid.Must(uuid.Parse(tenantID)),
 		req.Status,
-		uuid.Must(uuid.Parse(req.AssignedAgent)),
+		assignedAgentID,
 		req.Page,
 		req.Limit,
 	)

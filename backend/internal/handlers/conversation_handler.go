@@ -4,7 +4,6 @@ import (
 	"net/http"
 	convDTO "sociomile-apps/internal/dto/conversation"
 	"sociomile-apps/internal/services"
-	"sociomile-apps/internal/utils"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -31,14 +30,6 @@ func (h *ConversationHandler) AgentReply(c *gin.Context) {
 
 	agentID := c.GetString("user_id")
 	tenantID := c.GetString("tenant_id")
-
-	logger, logFile, err := utils.GenerateNewLogger("conversation_handler")
-	if err == nil {
-		logger.Printf("tenantID: %v", tenantID)
-		logger.Printf("agentID: %v", agentID)
-		logger.Printf("conversationID: %v", conversationID)
-		logFile.Close()
-	}
 
 	conv, err := h.service.AgentReply(
 		uuid.Must(uuid.Parse(conversationID)),

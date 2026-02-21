@@ -73,7 +73,9 @@ func (r *ConversationRepository) GetDetail(
 	tenantID uuid.UUID,
 ) (*model.Conversation, error) {
 	var conversation model.Conversation
-	if err := r.db.Preload("Messages").Where("id = ? AND tenant_id = ?", id, tenantID).First(&conversation).Error; err != nil {
+	if err := r.db.Preload("Messages", func(db *gorm.DB) *gorm.DB {
+		return db.Order("messages.created_at ASC")
+	}).Where("id = ? AND tenant_id = ?", id, tenantID).First(&conversation).Error; err != nil {
 		return nil, err
 	}
 	return &conversation, nil
