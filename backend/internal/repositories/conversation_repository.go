@@ -20,7 +20,7 @@ func (r *ConversationRepository) FindOpenByCustomer(
 	customerExternalID string,
 ) (*model.Conversation, error) {
 	var conversation model.Conversation
-	if err := r.db.Where("tenant_id = ? AND customer_external_id = ? AND status != ?", tenantID, customerExternalID, model.ConversationStatusOpen).First(&conversation).Error; err != nil {
+	if err := r.db.Where("tenant_id = ? AND customer_external_id = ? AND status != ?", tenantID, customerExternalID, model.ConversationStatusClosed).First(&conversation).Error; err != nil {
 		return nil, err
 	}
 	return &conversation, nil
