@@ -26,12 +26,12 @@ const (
 type Ticket struct {
 	ID              uuid.UUID      `gorm:"type:char(36);primary_key"`
 	TenantID        uuid.UUID      `gorm:"type:char(36);index;not null"`
-	ConversationID  uuid.UUID      `gorm:"type:char(36);index;not null"`
+	ConversationID  uuid.UUID      `gorm:"type:char(36);uniqueIndex;not null"`
 	Title           string         `gorm:"type:varchar(255);not null"`
 	Description     string         `gorm:"type:text;not null"`
 	Status          TicketStatus   `gorm:"type:varchar(50);default:'open';not null"`
 	Priority        TicketPriority `gorm:"type:varchar(50);default:'low';not null"`
-	AssignedAgentID *string        `gorm:"type:varchar(36);index;not null"`
+	AssignedAgentID *uuid.UUID     `gorm:"type:char(36);index"`
 
 	CreatedAt time.Time      `json:"created_at"`
 	UpdatedAt time.Time      `json:"updated_at"`

@@ -36,6 +36,13 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 
 	conversationQueryHandler := Handler.NewConversationQueryHandler(conversationQueryService)
 
+	ticketService := services.NewTicketService(
+		repositories.NewTicketRepository(db),
+		repositories.NewConversationRepository(db),
+	)
+
+	ticketHandler := Handler.NewTicketHandler(ticketService)
+
 	api := router.Group("/api")
 	{
 		auth := api.Group("/auth")
@@ -55,6 +62,14 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 			conversation.POST("/:id/agent-reply", middleware.AuthMiddleware(), middleware.RequireRole("agent"), conversationHandler.AgentReply)
 			conversation.GET("/:id", middleware.AuthMiddleware(), middleware.RequireRole("agent", "admin"), conversationQueryHandler.Detail)
 			conversation.GET("/", middleware.AuthMiddleware(), middleware.RequireRole("agent", "admin"), conversationQueryHandler.List)
+
+			conversation.POST("/:id/escalate", middleware.AuthMiddleware(), middleware.RequireRole("agent"), ticketHandler.EscalateTicket)
+		}
+
+		ticket := api.Group("/ticket")
+		{
+			ticket.GET("/", middleware.AuthMiddleware(), middleware.RequireRole("agent", "admin"), ticketHandler.List)
+			ticket.POST("/:id/update-status", middleware.AuthMiddleware(), middleware.RequireRole("agent", "admin"), ticketHandler.UpdateStatus)
 		}
 
 	}
