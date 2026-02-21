@@ -2,6 +2,7 @@ package routes
 
 import (
 	Handler "sociomile-apps/internal/handlers"
+	"sociomile-apps/internal/middleware"
 	repositories "sociomile-apps/internal/repositories"
 	"sociomile-apps/internal/services"
 
@@ -22,6 +23,19 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 
 	channelHandler := Handler.NewChannelHandler(channelService)
 
+	conversationService := services.NewConversationService(
+		repositories.NewConversationRepository(db),
+		repositories.NewMessageRepository(db),
+	)
+
+	conversationHandler := Handler.NewConversationHandler(conversationService)
+
+	conversationQueryService := services.NewConversationQueryService(
+		repositories.NewConversationRepository(db),
+	)
+
+	conversationQueryHandler := Handler.NewConversationQueryHandler(conversationQueryService)
+
 	api := router.Group("/api")
 	{
 		auth := api.Group("/auth")
@@ -35,6 +49,14 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 		{
 			channel.POST("/webhook", channelHandler.Webhook)
 		}
+
+		conversation := api.Group("/conversation")
+		{
+			conversation.POST("/:id/agent-reply", middleware.AuthMiddleware(), middleware.RequireRole("agent"), conversationHandler.AgentReply)
+			conversation.GET("/:id", middleware.AuthMiddleware(), middleware.RequireRole("agent", "admin"), conversationQueryHandler.Detail)
+			conversation.GET("/", middleware.AuthMiddleware(), middleware.RequireRole("agent", "admin"), conversationQueryHandler.List)
+		}
+
 	}
 	return router
 }

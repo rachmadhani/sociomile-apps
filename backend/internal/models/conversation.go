@@ -20,7 +20,7 @@ type Conversation struct {
 	TenantID           uuid.UUID          `gorm:"type:char(36);index;not null"`
 	CustomerExternalID string             `gorm:"type:varchar(255);not null"`
 	Status             ConversationStatus `gorm:"type:varchar(255);default:'open';not null"`
-	AssignedAgentID    *string            `gorm:"type:varchar(36);index"`
+	AssignedAgentID    *uuid.UUID         `gorm:"type:char(36);index"`
 	CreatedAt          time.Time          `json:"created_at"`
 	UpdatedAt          time.Time          `json:"updated_at"`
 	DeletedAt          gorm.DeletedAt     `gorm:"index"`
