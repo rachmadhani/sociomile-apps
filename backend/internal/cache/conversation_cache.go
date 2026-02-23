@@ -88,5 +88,5 @@ func (c *ConversationCache) Set(
 		return err
 	}
 
-	return c.rdb.Client.Set(ctx, key, val, 2*time.Minute).Err()
+	return c.rdb.Client.Set(ctx, key, val, 10*time.Minute).Err()
 }
