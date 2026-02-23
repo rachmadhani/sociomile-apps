@@ -11,7 +11,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func SetupRouter(db *gorm.DB) *gin.Engine {
+func SetupRouter(db *gorm.DB, dispatcher *event.Dispatcher) *gin.Engine {
 	router := gin.New()
 
 	authService := services.NewAuthService(db)
@@ -27,7 +27,7 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	conversationService := services.NewConversationService(
 		repositories.NewConversationRepository(db),
 		repositories.NewMessageRepository(db),
-		event.NewDispatcher(100),
+		dispatcher,
 	)
 
 	conversationHandler := Handler.NewConversationHandler(conversationService)
@@ -41,7 +41,7 @@ func SetupRouter(db *gorm.DB) *gin.Engine {
 	ticketService := services.NewTicketService(
 		repositories.NewTicketRepository(db),
 		repositories.NewConversationRepository(db),
-		event.NewDispatcher(100),
+		dispatcher,
 	)
 
 	ticketHandler := Handler.NewTicketHandler(ticketService)
