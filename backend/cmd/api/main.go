@@ -13,7 +13,7 @@ import (
 
 func main() {
 	cfg := config.LoadConfig()
-	log.Printf("Starting Bill Tracker API in %s mode", cfg.DBHost)
+	log.Printf("Starting Sociomile API in %s mode", cfg.DBHost)
 
 	db := database.Connect(cfg)
 	dispatcher := event.NewDispatcher(100)
@@ -27,8 +27,9 @@ func main() {
 	redisClient := cache.NewRedisClient()
 
 	conversationCache := cache.NewConversationCache(redisClient)
+	ticketCache := cache.NewTicketCache(redisClient)
 
-	router := routes.SetupRouter(db, dispatcher, conversationCache)
+	router := routes.SetupRouter(db, dispatcher, conversationCache, ticketCache)
 
 	log.Printf("Server starting on port %s", cfg.Port)
 	if err := router.Run(":" + cfg.Port); err != nil {

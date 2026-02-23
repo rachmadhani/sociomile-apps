@@ -1,7 +1,9 @@
 package services
 
 import (
+	"context"
 	"errors"
+	"sociomile-apps/internal/cache"
 	"sociomile-apps/internal/event"
 	model "sociomile-apps/internal/models"
 	"sociomile-apps/internal/repositories"
@@ -13,17 +15,20 @@ type TicketService struct {
 	ticketRepo *repositories.TicketRepository
 	convRepo   *repositories.ConversationRepository
 	dispatcher *event.Dispatcher
+	cache      *cache.TicketCache
 }
 
 func NewTicketService(
 	ticketRepo *repositories.TicketRepository,
 	convRepo *repositories.ConversationRepository,
 	dispatcher *event.Dispatcher,
+	cache *cache.TicketCache,
 ) *TicketService {
 	return &TicketService{
 		ticketRepo: ticketRepo,
 		convRepo:   convRepo,
 		dispatcher: dispatcher,
+		cache:      cache,
 	}
 }
 
@@ -96,6 +101,33 @@ func (s *TicketService) ListTicket(
 		limit = 10
 	}
 
+	if data, total, ok := s.cache.Get(
+		context.Background(),
+		"open",
+		uuid.Nil,
+		page,
+		limit,
+	); ok {
+		return data, total, nil
+	}
+
 	offset := (page - 1) * limit
-	return s.ticketRepo.List(offset, limit)
+
+	data, total, err := s.ticketRepo.List(offset, limit)
+
+	if err != nil {
+		return nil, 0, err
+	}
+
+	s.cache.Set(
+		context.Background(),
+		data,
+		total,
+		page,
+		limit,
+		"open",
+		uuid.Nil,
+	)
+
+	return data, total, nil
 }
