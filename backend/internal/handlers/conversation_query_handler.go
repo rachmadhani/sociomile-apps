@@ -32,6 +32,7 @@ func (h *ConversationQueryHandler) List(c *gin.Context) {
 	}
 
 	convs, total, err := h.service.List(
+		c.Request.Context(),
 		uuid.Must(uuid.Parse(tenantID)),
 		req.Status,
 		assignedAgentID,

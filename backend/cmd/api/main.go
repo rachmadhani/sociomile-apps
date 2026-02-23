@@ -2,8 +2,10 @@ package main
 
 import (
 	"log"
+	"os"
 
 	"sociomile-apps/config"
+	"sociomile-apps/internal/cache"
 	"sociomile-apps/internal/database"
 	"sociomile-apps/internal/event"
 	"sociomile-apps/internal/routes"
@@ -22,10 +24,21 @@ func main() {
 		log.Fatalf("Failed to run migrations: %v", err)
 	}
 
-	router := routes.SetupRouter(db, dispatcher)
+	redisClient := cache.NewRedisClient()
+
+	conversationCache := cache.NewConversationCache(redisClient)
+
+	router := routes.SetupRouter(db, dispatcher, conversationCache)
 
 	log.Printf("Server starting on port %s", cfg.Port)
 	if err := router.Run(":" + cfg.Port); err != nil {
 		log.Fatalf("Failed to start server: %v", err)
 	}
+}
+
+func getEnv(key, defaultValue string) string {
+	if value, exists := os.LookupEnv(key); exists {
+		return value
+	}
+	return defaultValue
 }

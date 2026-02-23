@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"sociomile-apps/internal/cache"
 	"sociomile-apps/internal/event"
 	Handler "sociomile-apps/internal/handlers"
 	"sociomile-apps/internal/middleware"
@@ -11,7 +12,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func SetupRouter(db *gorm.DB, dispatcher *event.Dispatcher) *gin.Engine {
+func SetupRouter(db *gorm.DB, dispatcher *event.Dispatcher, conversationCache *cache.ConversationCache) *gin.Engine {
 	router := gin.New()
 
 	authService := services.NewAuthService(db)
@@ -34,6 +35,7 @@ func SetupRouter(db *gorm.DB, dispatcher *event.Dispatcher) *gin.Engine {
 
 	conversationQueryService := services.NewConversationQueryService(
 		repositories.NewConversationRepository(db),
+		conversationCache,
 	)
 
 	conversationQueryHandler := Handler.NewConversationQueryHandler(conversationQueryService)
