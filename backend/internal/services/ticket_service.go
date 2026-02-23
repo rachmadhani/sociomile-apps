@@ -2,6 +2,7 @@ package services
 
 import (
 	"errors"
+	"sociomile-apps/internal/event"
 	model "sociomile-apps/internal/models"
 	"sociomile-apps/internal/repositories"
 
@@ -11,15 +12,18 @@ import (
 type TicketService struct {
 	ticketRepo *repositories.TicketRepository
 	convRepo   *repositories.ConversationRepository
+	dispatcher *event.Dispatcher
 }
 
 func NewTicketService(
 	ticketRepo *repositories.TicketRepository,
 	convRepo *repositories.ConversationRepository,
+	dispatcher *event.Dispatcher,
 ) *TicketService {
 	return &TicketService{
 		ticketRepo: ticketRepo,
 		convRepo:   convRepo,
+		dispatcher: dispatcher,
 	}
 }
 
@@ -51,9 +55,24 @@ func (s *TicketService) EscalateTicket(
 		Status:          model.TicketStatusOpen,
 	}
 
+	s.dispatcher.Dispatch(event.Event{
+		TenantID:  tenantID.String(),
+		EventType: "conversation.escalated",
+		EntityID:  conv.ID.String(),
+	})
+
 	if err := s.ticketRepo.CreateTicket(ticket); err != nil {
 		return nil, err
 	}
+
+	s.dispatcher.Dispatch(event.Event{
+		TenantID:  tenantID.String(),
+		EventType: "ticket.created",
+		EntityID:  ticket.ID.String(),
+		Payload: map[string]interface{}{
+			"priority": priority,
+		},
+	})
 
 	return ticket, nil
 }

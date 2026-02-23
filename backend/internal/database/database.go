@@ -40,6 +40,7 @@ func AutoMigrate() error {
 		&model.Message{},
 		&model.Ticket{},
 		&model.Session{},
+		&model.ActivityLog{},
 	)
 	if err != nil {
 		return err

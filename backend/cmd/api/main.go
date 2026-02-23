@@ -5,6 +5,7 @@ import (
 
 	"sociomile-apps/config"
 	"sociomile-apps/internal/database"
+	"sociomile-apps/internal/event"
 	"sociomile-apps/internal/routes"
 )
 
@@ -13,6 +14,9 @@ func main() {
 	log.Printf("Starting Bill Tracker API in %s mode", cfg.DBHost)
 
 	db := database.Connect(cfg)
+	dispatcher := event.NewDispatcher(100)
+	worker := event.NewWorker(db)
+	worker.Start(dispatcher.Channel())
 
 	if err := database.AutoMigrate(); err != nil {
 		log.Fatalf("Failed to run migrations: %v", err)

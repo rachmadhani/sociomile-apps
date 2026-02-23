@@ -2,6 +2,7 @@ package services
 
 import (
 	"errors"
+	"sociomile-apps/internal/event"
 	model "sociomile-apps/internal/models"
 	"sociomile-apps/internal/repositories"
 
@@ -9,17 +10,20 @@ import (
 )
 
 type ConversationService struct {
-	convRepo *repositories.ConversationRepository
-	msgRepo  *repositories.MessageRepository
+	convRepo   *repositories.ConversationRepository
+	msgRepo    *repositories.MessageRepository
+	dispatcher *event.Dispatcher
 }
 
 func NewConversationService(
 	convRepo *repositories.ConversationRepository,
 	msgRepo *repositories.MessageRepository,
+	dispatcher *event.Dispatcher,
 ) *ConversationService {
 	return &ConversationService{
-		convRepo: convRepo,
-		msgRepo:  msgRepo,
+		convRepo:   convRepo,
+		msgRepo:    msgRepo,
+		dispatcher: dispatcher,
 	}
 }
 
@@ -44,6 +48,15 @@ func (s *ConversationService) AgentReply(
 		if err := s.convRepo.Update(conv); err != nil {
 			return nil, err
 		}
+
+		s.dispatcher.Dispatch(event.Event{
+			TenantID:  tenantID.String(),
+			EventType: "conversation.assigned",
+			EntityID:  conversationID.String(),
+			Payload: map[string]interface{}{
+				"agent_id": agentId.String(),
+			},
+		})
 	}
 
 	msg := &model.Message{
