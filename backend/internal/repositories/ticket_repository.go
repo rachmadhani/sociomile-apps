@@ -43,14 +43,13 @@ func (r *TicketRepository) UpdateStatus(
 }
 
 func (r *TicketRepository) List(
-	tenantID uuid.UUID,
 	offset int,
 	limit int,
 ) ([]model.Ticket, int64, error) {
 	var tickets []model.Ticket
 	var total int64
 
-	query := r.db.Model(&model.Ticket{}).Where("tenant_id = ?", tenantID)
+	query := r.db.Model(&model.Ticket{})
 
 	if err := query.Count(&total).Error; err != nil {
 		return nil, 0, err

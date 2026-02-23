@@ -67,7 +67,6 @@ func (s *TicketService) UpdateTicketStatus(
 }
 
 func (s *TicketService) ListTicket(
-	tenantID uuid.UUID,
 	page int,
 	limit int,
 ) ([]model.Ticket, int64, error) {
@@ -79,5 +78,5 @@ func (s *TicketService) ListTicket(
 	}
 
 	offset := (page - 1) * limit
-	return s.ticketRepo.List(tenantID, offset, limit)
+	return s.ticketRepo.List(offset, limit)
 }

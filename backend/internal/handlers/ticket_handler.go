@@ -105,14 +105,7 @@ func (h *TicketHandler) UpdateStatus(c *gin.Context) {
 }
 
 func (h *TicketHandler) List(c *gin.Context) {
-	tenantID, err := uuid.Parse(c.GetString("tenant_id"))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid tenant id"})
-		return
-	}
-
 	tickets, total, _ := h.service.ListTicket(
-		tenantID,
 		c.GetInt("page"),
 		c.GetInt("limit"),
 	)
