@@ -59,11 +59,11 @@ func (s *TicketService) EscalateTicket(
 }
 
 func (s *TicketService) UpdateTicketStatus(
-	id uuid.UUID,
+	ticketID uuid.UUID,
 	tenantID uuid.UUID,
 	status string,
 ) error {
-	return s.ticketRepo.UpdateStatus(id, tenantID, status)
+	return s.ticketRepo.UpdateStatus(ticketID, tenantID, status)
 }
 
 func (s *TicketService) ListTicket(

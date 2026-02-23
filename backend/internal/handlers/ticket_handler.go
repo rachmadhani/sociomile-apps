@@ -84,19 +84,19 @@ func (h *TicketHandler) UpdateStatus(c *gin.Context) {
 		return
 	}
 
-	convID, err := uuid.Parse(c.Param("id"))
+	ticketID, err := uuid.Parse(c.Param("id"))
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid conversation id"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid ticket id"})
 		return
 	}
 
-	tenantID, err := uuid.Parse(c.GetString("tenant_id"))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid tenant id"})
-		return
-	}
+	tenantID := req.TenantID
 
-	if err := h.service.UpdateTicketStatus(convID, tenantID, req.Status); err != nil {
+	if err := h.service.UpdateTicketStatus(ticketID, tenantID, req.Status); err != nil {
+		if err.Error() == "record not found" {
+			c.JSON(http.StatusNotFound, gin.H{"error": "ticket not found"})
+			return
+		}
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

@@ -32,7 +32,14 @@ func (r *TicketRepository) UpdateStatus(
 	tenantID uuid.UUID,
 	status string,
 ) error {
-	return r.db.Model(&model.Ticket{}).Where("id = ? AND tenant_id = ?", id, tenantID).Update("status", status).Error
+	res := r.db.Model(&model.Ticket{}).Where("id = ? AND tenant_id = ?", id, tenantID).Update("status", status)
+	if res.Error != nil {
+		return res.Error
+	}
+	if res.RowsAffected == 0 {
+		return gorm.ErrRecordNotFound
+	}
+	return nil
 }
 
 func (r *TicketRepository) List(
