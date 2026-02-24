@@ -87,7 +87,11 @@ func (s *TicketService) UpdateTicketStatus(
 	tenantID uuid.UUID,
 	status string,
 ) error {
-	return s.ticketRepo.UpdateStatus(ticketID, tenantID, status)
+	err := s.ticketRepo.UpdateStatus(ticketID, tenantID, status)
+	if err == nil {
+		s.cache.InvalidateLists(context.Background())
+	}
+	return err
 }
 
 func (s *TicketService) ListTicket(

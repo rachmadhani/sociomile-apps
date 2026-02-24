@@ -80,3 +80,19 @@ func (c *TicketCache) Get(
 
 	return cached.Data, cached.Total, true
 }
+
+func (c *TicketCache) InvalidateLists(ctx context.Context) error {
+	iter := c.rdb.Client.Scan(ctx, 0, "ticket_list:*", 0).Iterator()
+	var keysToDelete []string
+	for iter.Next(ctx) {
+		keysToDelete = append(keysToDelete, iter.Val())
+	}
+	if err := iter.Err(); err != nil {
+		return err
+	}
+
+	if len(keysToDelete) > 0 {
+		return c.rdb.Client.Del(ctx, keysToDelete...).Err()
+	}
+	return nil
+}
