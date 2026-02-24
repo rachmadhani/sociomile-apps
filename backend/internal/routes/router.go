@@ -8,12 +8,19 @@ import (
 	repositories "sociomile-apps/internal/repositories"
 	"sociomile-apps/internal/services"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
 
 func SetupRouter(db *gorm.DB, dispatcher *event.Dispatcher, conversationCache *cache.ConversationCache, ticketCache *cache.TicketCache) *gin.Engine {
 	router := gin.New()
+
+	corsConfig := cors.DefaultConfig()
+	corsConfig.AllowAllOrigins = true
+	corsConfig.AllowCredentials = true
+	corsConfig.AllowHeaders = []string{"Origin", "Content-Length", "Content-Type", "Authorization", "Accept"}
+	router.Use(cors.New(corsConfig))
 
 	authService := services.NewAuthService(db)
 	authHandler := Handler.NewAuthHandler(authService)
