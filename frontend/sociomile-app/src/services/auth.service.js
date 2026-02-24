@@ -5,6 +5,10 @@ export const loginService = {
         const response = await Api.post("/auth/login", { email, password })
         return response.data
     },
+    async getListAgent() {
+        const response = await Api.get("/auth/list-agent")
+        return response.data
+    },
     async register(email, password) {
         const response = await Api.post("/auth/register", { email, password })
         return response.data

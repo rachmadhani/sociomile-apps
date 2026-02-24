@@ -62,6 +62,7 @@ func SetupRouter(db *gorm.DB, dispatcher *event.Dispatcher, conversationCache *c
 		{
 			auth.POST("/register", authHandler.Register)
 			auth.POST("/login", authHandler.Login)
+			auth.GET("/list-agent", authHandler.GetListAgent)
 			auth.POST("/logout", authHandler.Logout)
 		}
 

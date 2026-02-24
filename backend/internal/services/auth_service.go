@@ -92,6 +92,14 @@ func (s *AuthService) Login(input authDTO.LoginRequest) (*authDTO.AuthResponse, 
 	}, nil
 }
 
+func (s *AuthService) GetListAgent() ([]model.User, error) {
+	var users []model.User
+	if err := s.db.Where("role = ?", model.RoleAgent).Find(&users).Error; err != nil {
+		return nil, errors.New("users not found")
+	}
+	return users, nil
+}
+
 func (s *AuthService) Logout(token string) error {
 	var session model.Session
 	if err := s.db.Where("token = ?", token).First(&session).Error; err != nil {

@@ -23,6 +23,11 @@ const routes = [
         component: Register,
     },
     {
+        path: "/channel",
+        name: "Channel",
+        component: Channel,
+    },
+    {
         path: "/",
         name: "MainLayout",
         component: MainLayout,
@@ -58,12 +63,6 @@ const routes = [
                 name: "TicketDetail",
                 component: TicketDetail,
                 meta: { roles: ['agent', 'admin'] }
-            },
-            {
-                path: "channel",
-                name: "Channel",
-                component: Channel,
-                meta: { roles: ['agent', 'admin'] }
             }
         ]
     },
@@ -89,7 +88,7 @@ router.beforeEach((to, from, next) => {
     if (to.meta.roles && to.meta.roles.length > 0) {
         if (!user || !user.role || !to.meta.roles.includes(user.role)) {
             console.warn("User doesn't have the required role")
-            // Instead of next(false), you could redirect to a 403 page or dashboard
+
             next({ name: "Dashboard" })
             return
         }
