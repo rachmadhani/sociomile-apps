@@ -28,7 +28,7 @@
                 <div v-if="!conversation.messages || conversation.messages.length === 0">No messages yet.</div>
             </div>
 
-            <!-- Agent Reply Form -->
+            
             <div v-if="user?.role === 'agent' || user?.role === 'admin'" style="margin-bottom: 20px;">
                 <h4>Reply</h4>
                 <textarea v-model="replyContent" rows="3" style="width: 100%; margin-bottom: 10px;" placeholder="Type your message here..."></textarea>

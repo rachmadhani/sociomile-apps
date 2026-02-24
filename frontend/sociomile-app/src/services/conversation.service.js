@@ -11,8 +11,8 @@ export const conversationService = {
         return response.data
     },
 
-    async reply(id, content) {
-        const response = await api.post(`/conversation/${id}/agent-reply`, { content })
+    async reply(id, message) {
+        const response = await api.post(`/conversation/${id}/agent-reply`, { message })
         return response.data
     },
 
