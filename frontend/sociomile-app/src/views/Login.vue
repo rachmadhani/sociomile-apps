@@ -20,6 +20,7 @@ const submit = async () => {
     try {
         const response = await loginService.login(email.value, password.value)
         localStorage.setItem("token", response.data.access_token)
+        localStorage.setItem("user", JSON.stringify(response.data.user))
         router.push({ name: "Dashboard" })
     } catch (error) {
         console.error(error)
