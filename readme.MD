@@ -217,6 +217,7 @@ Asumsi :
 
 - Customer tidak memiliki authentication.
 - Channel eksternal hanya simulasi webhook.
+- Customer bisa memilih agent untuk buat conversation.
 
 Trade-off :
 
