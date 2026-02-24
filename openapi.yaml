@@ -1,0 +1,343 @@
+openapi: 3.0.0
+info:
+  title: Sociomile API
+  description: Fullstack application untuk mensimulasikan flow omnichannel customer support
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080/api
+    description: Local Server
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        tenant_id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        email:
+          type: string
+        role:
+          type: string
+          enum: [admin, agent]
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    LoginRequest:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+        password:
+          type: string
+          format: password
+
+    AuthResponse:
+      type: object
+      properties:
+        data:
+          type: object
+          properties:
+            access_token:
+              type: string
+            user:
+              $ref: '#/components/schemas/User'
+
+    WebhookRequest:
+      type: object
+      required:
+        - tenant_id
+        - customer_external_id
+        - message
+      properties:
+        tenant_id:
+          type: string
+          format: uuid
+        customer_external_id:
+          type: string
+        message:
+          type: string
+
+    WebhookResponse:
+      type: object
+      properties:
+        conversation_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+
+    AgentReplyRequest:
+      type: object
+      required:
+        - tenant_id
+        - message
+      properties:
+        tenant_id:
+          type: string
+          format: uuid
+        message:
+          type: string
+
+    EscalateTicketRequest:
+      type: object
+      required:
+        - title
+        - description
+        - priority
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        priority:
+          type: string
+          enum: [low, medium, high, urgent]
+
+    UpdateTicketStatusRequest:
+      type: object
+      required:
+        - tenant_id
+        - status
+      properties:
+        tenant_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [open, in_progress, resolved, closed]
+
+security:
+  - bearerAuth: []
+
+paths:
+  /auth/login:
+    post:
+      summary: Login
+      tags:
+        - Authentication
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+
+  /auth/register:
+    post:
+      summary: Register
+      tags:
+        - Authentication
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Registration successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/User'
+
+  /auth/list-agent:
+    get:
+      summary: Get List Agent
+      tags:
+        - Authentication
+      responses:
+        '200':
+          description: A list of agents
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+
+  /auth/logout:
+    post:
+      summary: Logout
+      tags:
+        - Authentication
+      responses:
+        '200':
+          description: Logout successful
+
+  /channel/webhook:
+    post:
+      summary: Trigger incoming message from customer
+      tags:
+        - Channel
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookRequest'
+      responses:
+        '200':
+          description: Webhook received successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookResponse'
+
+  /conversation:
+    get:
+      summary: List conversations
+      tags:
+        - Conversation
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: A paginated list of conversations
+
+  /conversation/{id}:
+    get:
+      summary: Detail conversation
+      tags:
+        - Conversation
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Conversation details with messages
+
+  /conversation/{id}/agent-reply:
+    post:
+      summary: Agent reply to conversation
+      tags:
+        - Conversation
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AgentReplyRequest'
+      responses:
+        '200':
+          description: Reply sent successfully
+
+  /conversation/{id}/escalate:
+    post:
+      summary: Escalate ticket
+      tags:
+        - Conversation
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EscalateTicketRequest'
+      responses:
+        '200':
+          description: Ticket escalated successfully
+
+  /ticket:
+    get:
+      summary: List tickets
+      tags:
+        - Ticket
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+            default: 1
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: A paginated list of tickets
+
+  /ticket/{id}/update-status:
+    post:
+      summary: Update ticket status
+      tags:
+        - Ticket
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateTicketStatusRequest'
+      responses:
+        '200':
+          description: Status updated successfully
