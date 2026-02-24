@@ -22,8 +22,8 @@
                          background: msg.sender_type === 'agent' ? '#e3f2fd' : '#f5f5f5',
                          textAlign: msg.sender_type === 'agent' ? 'right' : 'left'
                      }">
-                    <p style="margin: 0;"><strong>{{ msg.sender_type }}:</strong> {{ msg.content }}</p>
-                    <small style="color: #666;">{{ new Date(msg.CreatedAt).toLocaleString() }}</small>
+                    <p style="margin: 0;"><strong>{{ msg.sender_type }}:</strong> {{ msg.message }}</p>
+                    <small style="color: #666;">{{ new Date(msg.created_at).toLocaleString() }}</small>
                 </div>
                 <div v-if="!conversation.messages || conversation.messages.length === 0">No messages yet.</div>
             </div>
@@ -35,7 +35,6 @@
                 <button @click="submitReply" :disabled="submittingReply">Send Reply</button>
             </div>
 
-            <!-- Escalate Form -->
             <div v-if="user?.role === 'agent' && conversation.status !== 'escalated'" style="border-top: 1px solid #ccc; padding-top: 20px;">
                 <h4>Escalate to Ticket</h4>
                 <div style="margin-bottom: 10px;">
@@ -65,7 +64,7 @@ import { conversationService } from '../services/conversation.service'
 const route = useRoute()
 const conversationId = route.params.id
 
-const conversation = ref(null)
+const conversation = ref({})
 const loading = ref(true)
 const error = ref(null)
 
@@ -84,7 +83,8 @@ const loadConversation = async () => {
     error.value = null
     try {
         const response = await conversationService.getConversation(conversationId)
-        conversation.value = response.data
+        conversation.value = response
+        console.log(response)
     } catch (err) {
         error.value = "Failed to load conversation details."
         console.error(err)
