@@ -8,7 +8,7 @@
         <div v-else>
             <div style="background: #f9f9f9; padding: 15px; border: 1px solid #ddd; margin-bottom: 20px;">
                 <p><strong>ID:</strong> {{ ticket.id }}</p>
-                <p><strong>Subject:</strong> {{ ticket.subject }}</p>
+                <p><strong>TenantID:</strong> {{ ticket.tenant_id }}</p>
                 <p><strong>Priority:</strong> {{ ticket.priority }}</p>
                 <p><strong>Status:</strong> <span style="font-weight: bold;">{{ ticket.status }}</span></p>
             </div>
@@ -75,7 +75,7 @@ const loadTicket = async () => {
 const updateStatus = async () => {
     submittingUpdate.value = true
     try {
-        await ticketService.updateStatus(ticketId, newStatus.value)
+        await ticketService.updateStatus(ticketId, ticket.value.tenant_id, newStatus.value)
         alert("Status updated successfully!")
         await loadTicket() 
     } catch (err) {

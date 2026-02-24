@@ -121,6 +121,7 @@ func (h *TicketHandler) List(c *gin.Context) {
 		resp = append(resp, dtoTicket.TicketListItem{
 			ID:             t.ID.String(),
 			ConversationID: t.ConversationID.String(),
+			TenantID:       t.TenantID.String(),
 			Status:         string(t.Status),
 			Priority:       string(t.Priority),
 			AssignedAgent:  assignedAgent,

@@ -56,13 +56,13 @@ const routes = [
                 path: "tickets",
                 name: "Tickets",
                 component: Tickets,
-                meta: { roles: ['agent', 'admin'] }
+                meta: { roles: ['admin'] }
             },
             {
                 path: "ticket/:id",
                 name: "TicketDetail",
                 component: TicketDetail,
-                meta: { roles: ['agent', 'admin'] }
+                meta: { roles: ['admin'] }
             }
         ]
     },

@@ -16,8 +16,8 @@ export const conversationService = {
         return response.data
     },
 
-    async escalate(id, category, priority) {
-        const response = await api.post(`/conversation/${id}/escalate`, { category, priority })
+    async escalate(id, title, description, priority) {
+        const response = await api.post(`/conversation/${id}/escalate`, { title, description, priority })
         return response.data
     }
 }

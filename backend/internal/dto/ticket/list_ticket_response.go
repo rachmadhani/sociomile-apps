@@ -3,6 +3,7 @@ package ticket
 type TicketListItem struct {
 	ID             string  `json:"id"`
 	ConversationID string  `json:"conversation_id"`
+	TenantID       string  `json:"tenant_id"`
 	Status         string  `json:"status"`
 	Priority       string  `json:"priority"`
 	AssignedAgent  *string `json:"assigned_agent_id"`

@@ -82,7 +82,7 @@ func SetupRouter(db *gorm.DB, dispatcher *event.Dispatcher, conversationCache *c
 
 		ticket := api.Group("/ticket")
 		{
-			ticket.GET("/", middleware.AuthMiddleware(), middleware.RequireRole("agent", "admin"), ticketHandler.List)
+			ticket.GET("/", middleware.AuthMiddleware(), middleware.RequireRole("admin"), ticketHandler.List)
 			ticket.POST("/:id/update-status", middleware.AuthMiddleware(), middleware.RequireRole("admin"), ticketHandler.UpdateStatus)
 		}
 

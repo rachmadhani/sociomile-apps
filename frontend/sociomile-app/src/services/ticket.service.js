@@ -6,8 +6,8 @@ export const ticketService = {
         return response.data
     },
 
-    async updateStatus(id, status) {
-        const response = await api.post(`/ticket/${id}/update-status`, { status })
+    async updateStatus(id, tenant_id, status) {
+        const response = await api.post(`/ticket/${id}/update-status`, { tenant_id, status })
         return response.data
     }
 }

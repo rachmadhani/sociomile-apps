@@ -38,8 +38,12 @@
             <div v-if="user?.role === 'agent' && conversation.status !== 'escalated'" style="border-top: 1px solid #ccc; padding-top: 20px;">
                 <h4>Escalate to Ticket</h4>
                 <div style="margin-bottom: 10px;">
-                    <label>Category: </label>
-                    <input v-model="escalateCategory" placeholder="e.g. Technical Support" />
+                    <label>Title: </label>
+                      <input v-model="escalateTitle" placeholder="e.g. Technical Support" />
+                </div>
+                <div style="margin-bottom: 10px;">
+                    <label>Description: </label>
+                    <textarea v-model="escalateDescription" rows="3" style="width: 100%; margin-bottom: 10px;" placeholder="Type your message here..."></textarea>
                 </div>
                 <div style="margin-bottom: 10px;">
                     <label>Priority: </label>
@@ -71,7 +75,8 @@ const error = ref(null)
 const replyContent = ref("")
 const submittingReply = ref(false)
 
-const escalateCategory = ref("")
+const escalateTitle = ref("")
+const escalateDescription = ref("")
 const escalatePriority = ref("medium")
 const submittingEscalate = ref(false)
 
@@ -109,13 +114,17 @@ const submitReply = async () => {
 }
 
 const escalateTicket = async () => {
-    if (!escalateCategory.value.trim()) {
-        alert("Please enter a category")
+    if (!escalateTitle.value.trim()) {
+        alert("Please enter a title")
+        return
+    }
+    if (!escalateDescription.value.trim()) {
+        alert("Please enter a description")
         return
     }
     submittingEscalate.value = true
     try {
-        await conversationService.escalate(conversationId, escalateCategory.value, escalatePriority.value)
+        await conversationService.escalate(conversationId, escalateTitle.value, escalateDescription.value, escalatePriority.value)
         alert("Escalated successfully!")
         await loadConversation()
     } catch (err) {
